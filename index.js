@@ -42,6 +42,9 @@ const upload = multer({
     limits: { fileSize: 20 * 1024 * 1024 }
 });
 
+process.on('uncaughtException', (err) => log('error', 'CRITICAL', err.message));
+process.on('unhandledRejection', (reason) => log('error', 'CRITICAL', reason));
+
 const TEMP_DIR = './temp';
 if (!fs.existsSync(TEMP_DIR)) fs.mkdirSync(TEMP_DIR);
 
@@ -147,6 +150,27 @@ SABIR7718.post('/sticker', upload.single('file'), async (req, res) => {
         if (tempOutput && fs.existsSync(tempOutput)) fs.unlinkSync(tempOutput);
     }
 });
+
+if (process.env.URL) {
+
+    (async () => {
+        try {
+            const res = await fetch(process.env.URL);
+            log('info', 'PING', `Initial Ping: ${res.status}`);
+        } catch (err) {
+            log('error', 'PING', err.message);
+        }
+    })();
+
+    setInterval(async () => {
+        try {
+            const res = await fetch(process.env.URL);
+            log('info', 'PING', `Pinged: ${process.env.URL} | Status: ${res.status}`);
+        } catch (err) {
+            log('error', 'PING', err.message);
+        }
+    }, 5 * 60 * 1000);
+}
 
 SABIR7718.listen(3000, () => {
     log('success', 'SERVER', 'Advanced Sticker API Running on 3000');

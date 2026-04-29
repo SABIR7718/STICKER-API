@@ -74,6 +74,14 @@ const convertToWebp = (inputPath, outputPath) => {
     });
 };
 
+SABIR7718.get('/', (req, res) => {
+    res.status(200).json({
+        status: true,
+        message: 'Sticker API Is Alive ',
+        dev: 'SABIR7718'
+    });
+});
+
 SABIR7718.post('/sticker', upload.single('file'), async (req, res) => {
     let tempInput, tempOutput;
 
